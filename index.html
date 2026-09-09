@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gửi em bé của chồng ❤️</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   
   <style>
@@ -31,11 +31,11 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      background: rgba(255, 255, 255, 0.95);
+      background: #ffffff;
       border: 2px solid #ff758c;
       border-radius: 50%;
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -111,7 +111,7 @@
       width: 290px;
       background: #ffffff;
       border-radius: 8px;
-      padding: 24px 20px;
+      padding: 20px 18px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       transition: all 0.7s ease;
       z-index: 2;
@@ -122,13 +122,13 @@
 
     .letter-text {
       font-size: 15px;
-      line-height: 1.7;
+      line-height: 1.65;
       color: #4a4a4a;
       text-align: center;
     }
 
     .letter-sign {
-      margin-top: 16px;
+      margin-top: 14px;
       text-align: center;
       font-family: 'Dancing Script', cursive;
       font-size: 26px;
@@ -146,11 +146,11 @@
     }
 
     .envelope-wrapper.open .letter {
-      bottom: 210px;
+      bottom: 190px;
       opacity: 1;
-      max-height: 500px;
+      max-height: 520px;
       z-index: 6;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.18);
     }
 
     .hint-text {
@@ -175,27 +175,22 @@
     }
 
     @keyframes floatUp {
-      0% {
-        transform: translateY(0) scale(0.8) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-110vh) scale(1.4) rotate(360deg);
-      }
+      0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-110vh) scale(1.4) rotate(360deg); opacity: 0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Nút loa góc phải -->
-  <div class="music-btn" id="musicBtn" title="Bật/Tắt nhạc">🎵</div>
+  <!-- Nút góc phải -->
+  <div class="music-btn" id="musicBtn" onclick="toggleAudio(event)">🎵</div>
 
-  <!-- Thẻ Audio hỗ trợ đầy đủ cho Safari iOS -->
-  <audio id="bgMusic" loop playsinline webkit-playsinline preload="auto">
-    <source src="./music.mp3.mp3" type="audio/mpeg">
+  <!-- Audio trực tiếp bài Beautiful In White chuẩn MP3 -->
+  <audio id="bgMusic" loop preload="auto" playsinline webkit-playsinline>
+    <source src="https://files.catbox.moe/kspg3h.mp3" type="audio/mpeg">
   </audio>
 
-  <div class="envelope-wrapper" id="envelopeWrapper">
+  <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleLetter()">
     <div class="envelope">
       <div class="seal-heart">💌</div>
       <div class="envelope-front"></div>
@@ -218,22 +213,30 @@
     const wrapper = document.getElementById('envelopeWrapper');
     const hint = document.getElementById('hint');
 
-    // Hàm kích hoạt âm thanh cưỡng bức trên iOS
-    function startMusic() {
+    function forcePlay() {
       audio.play().then(() => {
         musicBtn.textContent = '🎵';
-      }).catch(e => {
-        console.log("iOS cần chạm trực tiếp:", e);
+      }).catch(err => {
+        console.log("Cần chạm thêm để phát:", err);
       });
     }
 
-    function toggleLetterAction() {
+    function toggleAudio(e) {
+      if (e) e.stopPropagation();
+      if (audio.paused) {
+        forcePlay();
+      } else {
+        audio.pause();
+        musicBtn.textContent = '🔇';
+      }
+    }
+
+    function toggleLetter() {
       isOpen = !isOpen;
       wrapper.classList.toggle('open', isOpen);
       hint.textContent = isOpen ? "chạm lần nữa để khép lại" : "chạm vào phong thư để mở";
       
-      // Bật nhạc ngay
-      startMusic();
+      forcePlay();
 
       if (isOpen) {
         for (let i = 0; i < 15; i++) {
@@ -242,24 +245,9 @@
       }
     }
 
-    // Bắt sự kiện chạm (hỗ trợ cả chạm ngón tay trên điện thoại và click chuột trên PC)
-    wrapper.addEventListener('click', toggleLetterAction);
     wrapper.addEventListener('touchstart', function() {
-      if (audio.paused) {
-        startMusic();
-      }
-    }, { passive: true });
-
-    // Bấm nút nốt nhạc góc phải
-    musicBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (audio.paused) {
-        startMusic();
-      } else {
-        audio.pause();
-        musicBtn.textContent = '🔇';
-      }
-    });
+      forcePlay();
+    }, { once: false, passive: true });
 
     function createHeart() {
       const heart = document.createElement('div');
