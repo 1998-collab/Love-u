@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gửi em, điều ngọt ngào nhất ❤️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: radial-gradient(circle, #ffe6eb 0%, #ffd1dc 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Quicksand', sans-serif;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    /* Container phong bì */
+    .envelope-wrapper {
+      position: relative;
+      cursor: pointer;
+      perspective: 1000px;
+      margin-top: 50px;
+    }
+
+    .envelope {
+      position: relative;
+      width: 320px;
+      height: 200px;
+      background: #ff758c;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 15px 35px rgba(255, 117, 140, 0.4);
+      transition: all 0.5s ease;
+    }
+
+    /* Nắp phong thư */
+    .envelope::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-left: 160px solid transparent;
+      border-right: 160px solid transparent;
+      border-top: 110px solid #ff5e7e;
+      transform-origin: top;
+      transition: transform 0.6s 0.2s ease, z-index 0.2s 0.4s ease;
+      z-index: 5;
+    }
+
+    /* Mặt trước của phong thư */
+    .envelope-front {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      border-left: 160px solid #ff7b93;
+      border-right: 160px solid #ff7b93;
+      border-bottom: 100px solid #ff6884;
+      border-top: 100px solid transparent;
+      border-radius: 0 0 10px 10px;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    /* Con dấu niêm phong */
+    .seal-heart {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 32px;
+      z-index: 6;
+      transition: opacity 0.3s ease;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));
+    }
+
+    /* Lá thư bên trong */
+    .letter {
+      position: absolute;
+      left: 15px;
+      bottom: 10px;
+      width: 290px;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 24px 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      transition: all 0.7s ease;
+      z-index: 2;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+    }
+
+    .letter-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 28px;
+      color: #e63946;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .letter-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #4a4a4a;
+      text-align: center;
+    }
+
+    .letter-sign {
+      margin-top: 16px;
+      text-align: center;
+      font-family: 'Dancing Script', cursive;
+      font-size: 24px;
+      font-weight: 700;
+      color: #e63946;
+    }
+
+    /* Hiệu ứng khi bấm mở */
+    .envelope-wrapper.open .envelope::before {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope-wrapper.open .seal-heart {
+      opacity: 0;
+    }
+
+    .envelope-wrapper.open .letter {
+      bottom: 210px;
+      opacity: 1;
+      max-height: 400px;
+      z-index: 6;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    .hint-text {
+      margin-top: 35px;
+      color: #d63384;
+      font-weight: 600;
+      font-size: 15px;
+      animation: pulse 1.5s infinite;
+      cursor: pointer;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* Hiệu ứng tim bay */
+    .heart-particle {
+      position: fixed;
+      bottom: -20px;
+      pointer-events: none;
+      animation: floatUp 4s linear forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.8) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-110vh) scale(1.4) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleLetter()">
+    <div class="envelope">
+      <div class="seal-heart">💌</div>
+      <div class="envelope-front"></div>
+      
+      <div class="letter">
+        <div class="letter-title">Gửi em!</div>
+        <p class="letter-text">
+          Cảm ơn em vì đã luôn ở bên cạnh chồng, biến những ngày bình thường nhất trở nên thật dịu dàng và ấm áp.<br><br>
+          Dù ngày có bận rộn thế nào, nhớ giữ nụ cười thật tươi nhé!
+        </p>
+        <div class="letter-sign">Chồng yêu em ❤️</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint-text" id="hint"> chạm vào phong thư để mở </div>
+
+  <script>
+    let isOpen = false;
+
+    function toggleLetter() {
+      const wrapper = document.getElementById('envelopeWrapper');
+      const hint = document.getElementById('hint');
+      
+      isOpen = !isOpen;
+      wrapper.classList.toggle('open', isOpen);
+      hint.textContent = isOpen ? "chạm lần nữa để khép lại" : "chạm vào phong thư để mở";
+      
+      if (isOpen) {
+        for (let i = 0; i < 15; i++) {
+          setTimeout(createHeart, i * 150);
+        }
+      }
+    }
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart-particle');
+      heart.innerHTML = ['💖', '🌸', '✨', '💕', '❤️'][Math.floor(Math.random() * 5)];
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.fontSize = (Math.random() * 16 + 16) + 'px';
+      heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+      document.body.appendChild(heart);
+      
+      setTimeout(() => heart.remove(), 4000);
+    }
+
+    setInterval(createHeart, 900);
+  </script>
+</body>
+</html>
