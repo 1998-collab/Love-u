@@ -26,6 +26,29 @@
       padding: 20px;
     }
 
+    /* Nút bật/tắt nhạc góc phải */
+    .music-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #ff758c;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+      transition: transform 0.2s ease;
+    }
+    .music-btn:active {
+      transform: scale(0.9);
+    }
+
     /* Container phong bì */
     .envelope-wrapper {
       position: relative;
@@ -157,7 +180,6 @@
       50% { opacity: 1; transform: scale(1.05); }
     }
 
-    /* Hiệu ứng tim bay */
     .heart-particle {
       position: fixed;
       bottom: -20px;
@@ -179,6 +201,14 @@
 </head>
 <body>
 
+  <!-- Nút điều khiển nhạc -->
+  <button class="music-btn" id="musicBtn" onclick="toggleAudio(event)" title="Bật/Tắt nhạc">🎵</button>
+
+  <!-- Audio player (link nhạc piano không lời lãng mạn) -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="https://assets.mixkit.co/music/preview/mixkit-romantic-moment-1033.mp3" type="audio/mp3">
+  </audio>
+
   <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleLetter()">
     <div class="envelope">
       <div class="seal-heart">💌</div>
@@ -199,6 +229,19 @@
 
   <script>
     let isOpen = false;
+    const audio = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+
+    function toggleAudio(e) {
+      if (e) e.stopPropagation();
+      if (audio.paused) {
+        audio.play();
+        musicBtn.textContent = '🎵';
+      } else {
+        audio.pause();
+        musicBtn.textContent = '🔇';
+      }
+    }
 
     function toggleLetter() {
       const wrapper = document.getElementById('envelopeWrapper');
@@ -208,6 +251,11 @@
       wrapper.classList.toggle('open', isOpen);
       hint.textContent = isOpen ? "chạm lần nữa để khép lại" : "chạm vào phong thư để mở";
       
+      // Tự động phát nhạc khi chạm mở phong thư lần đầu tiên
+      if (isOpen && audio.paused) {
+        audio.play().catch(() => {});
+      }
+
       if (isOpen) {
         for (let i = 0; i < 15; i++) {
           setTimeout(createHeart, i * 150);
