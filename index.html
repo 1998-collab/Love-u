@@ -31,22 +31,18 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid #ff758c;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #ff758c;
       border-radius: 50%;
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 22px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
       z-index: 100;
-      transition: transform 0.2s ease;
-    }
-    .music-btn:active {
-      transform: scale(0.9);
     }
 
     /* Container phong bì */
@@ -55,6 +51,7 @@
       cursor: pointer;
       perspective: 1000px;
       margin-top: 50px;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .envelope {
@@ -81,7 +78,7 @@
       z-index: 5;
     }
 
-    /* Mặt trước của phong thư */
+    /* Mặt trước phong thư */
     .envelope-front {
       position: absolute;
       bottom: 0;
@@ -95,7 +92,7 @@
       pointer-events: none;
     }
 
-    /* Con dấu niêm phong */
+    /* Con dấu */
     .seal-heart {
       position: absolute;
       top: 90px;
@@ -104,10 +101,9 @@
       font-size: 32px;
       z-index: 6;
       transition: opacity 0.3s ease;
-      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));
     }
 
-    /* Lá thư bên trong */
+    /* Lá thư */
     .letter {
       position: absolute;
       left: 15px;
@@ -140,7 +136,6 @@
       color: #e63946;
     }
 
-    /* Hiệu ứng khi bấm mở */
     .envelope-wrapper.open .envelope::before {
       transform: rotateX(180deg);
       z-index: 1;
@@ -172,7 +167,6 @@
       50% { opacity: 1; transform: scale(1.05); }
     }
 
-    /* Trái tim bay */
     .heart-particle {
       position: fixed;
       bottom: -20px;
@@ -193,22 +187,22 @@
 </head>
 <body>
 
-  <!-- Nút điều khiển âm thanh -->
-  <button class="music-btn" id="musicBtn" onclick="toggleAudio(event)" title="Bật/Tắt nhạc">🎵</button>
+  <!-- Nút loa góc phải -->
+  <div class="music-btn" id="musicBtn" title="Bật/Tắt nhạc">🎵</div>
 
-  <!-- Audio player phát file music.mp3 đã tải lên GitHub -->
-  <audio id="bgMusic" loop playsinline preload="auto">
-    <source src="music.mp3" type="audio/mpeg">
+  <!-- Thẻ Audio hỗ trợ đầy đủ cho Safari iOS -->
+  <audio id="bgMusic" loop playsinline webkit-playsinline preload="auto">
+    <source src="./music.mp3" type="audio/mpeg">
   </audio>
 
-  <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleLetter()">
+  <div class="envelope-wrapper" id="envelopeWrapper">
     <div class="envelope">
       <div class="seal-heart">💌</div>
       <div class="envelope-front"></div>
       
       <div class="letter">
         <p class="letter-text">
-          Xin chào em bé của chồng. Ghé má lại đây để chồng dành tặng em thật nhiều nụ hôn vào má, vào môi xinh nhé 💋💋💋. Nếu ngày hôm nay em bé cũng yêu chồng nhiều thì hãy dành tặng chồng thật nhiều nụ hôn nha!
+          Xin chào em bé của chồng. Ghé má lại đây để chồng dành tặng em thật nhiều nụ hôn vào má, vào môi xinh nhé 💋💋💋. Nếu ngày hôm nay em bé cũng yêu chồng nhiều thì hãy dành tặng chồng thật nhiều nụ hôn nhé!
         </p>
         <div class="letter-sign">Chồng yêu em ❤️</div>
       </div>
@@ -221,43 +215,51 @@
     let isOpen = false;
     const audio = document.getElementById('bgMusic');
     const musicBtn = document.getElementById('musicBtn');
+    const wrapper = document.getElementById('envelopeWrapper');
+    const hint = document.getElementById('hint');
 
-    function playAudioSafe() {
-      if (audio.paused) {
-        audio.play().then(() => {
-          musicBtn.textContent = '🎵';
-        }).catch(err => {
-          console.log("Chờ người dùng chạm màn hình:", err);
-        });
-      }
+    // Hàm kích hoạt âm thanh cưỡng bức trên iOS
+    function startMusic() {
+      audio.play().then(() => {
+        musicBtn.textContent = '🎵';
+      }).catch(e => {
+        console.log("iOS cần chạm trực tiếp:", e);
+      });
     }
 
-    function toggleAudio(e) {
-      if (e) e.stopPropagation();
-      if (audio.paused) {
-        playAudioSafe();
-      } else {
-        audio.pause();
-        musicBtn.textContent = '🔇';
-      }
-    }
-
-    function toggleLetter() {
-      const wrapper = document.getElementById('envelopeWrapper');
-      const hint = document.getElementById('hint');
-      
+    function toggleLetterAction() {
       isOpen = !isOpen;
       wrapper.classList.toggle('open', isOpen);
       hint.textContent = isOpen ? "chạm lần nữa để khép lại" : "chạm vào phong thư để mở";
       
-      // Chạm mở phong thư là nhạc cất lên ngay lập tức
+      // Bật nhạc ngay
+      startMusic();
+
       if (isOpen) {
-        playAudioSafe();
         for (let i = 0; i < 15; i++) {
           setTimeout(createHeart, i * 150);
         }
       }
     }
+
+    // Bắt sự kiện chạm (hỗ trợ cả chạm ngón tay trên điện thoại và click chuột trên PC)
+    wrapper.addEventListener('click', toggleLetterAction);
+    wrapper.addEventListener('touchstart', function() {
+      if (audio.paused) {
+        startMusic();
+      }
+    }, { passive: true });
+
+    // Bấm nút nốt nhạc góc phải
+    musicBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (audio.paused) {
+        startMusic();
+      } else {
+        audio.pause();
+        musicBtn.textContent = '🔇';
+      }
+    });
 
     function createHeart() {
       const heart = document.createElement('div');
