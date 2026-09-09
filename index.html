@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gửi em, điều ngọt ngào nhất ❤️</title>
+  <title>Gửi em bé của chồng ❤️</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
@@ -31,22 +31,29 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.9);
       border: 1px solid #ff758c;
       border-radius: 50%;
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 20px;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
       z-index: 100;
-      transition: transform 0.2s ease;
     }
-    .music-btn:active {
-      transform: scale(0.9);
+
+    /* Khung chứa YouTube player ẩn */
+    #yt-player {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
     }
 
     /* Container phong bì */
@@ -81,7 +88,7 @@
       z-index: 5;
     }
 
-    /* Mặt trước của phong thư */
+    /* Mặt trước phong thư */
     .envelope-front {
       position: absolute;
       bottom: 0;
@@ -115,7 +122,7 @@
       width: 290px;
       background: #ffffff;
       border-radius: 8px;
-      padding: 24px 20px;
+      padding: 22px 18px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       transition: all 0.7s ease;
       z-index: 2;
@@ -124,26 +131,18 @@
       overflow: hidden;
     }
 
-    .letter-title {
-      font-family: 'Dancing Script', cursive;
-      font-size: 28px;
-      color: #e63946;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
     .letter-text {
       font-size: 15px;
-      line-height: 1.7;
+      line-height: 1.65;
       color: #4a4a4a;
       text-align: center;
     }
 
     .letter-sign {
-      margin-top: 16px;
+      margin-top: 15px;
       text-align: center;
       font-family: 'Dancing Script', cursive;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 700;
       color: #e63946;
     }
@@ -159,9 +158,9 @@
     }
 
     .envelope-wrapper.open .letter {
-      bottom: 210px;
+      bottom: 180px;
       opacity: 1;
-      max-height: 400px;
+      max-height: 500px;
       z-index: 6;
       box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     }
@@ -180,6 +179,7 @@
       50% { opacity: 1; transform: scale(1.05); }
     }
 
+    /* Hiệu ứng bay */
     .heart-particle {
       position: fixed;
       bottom: -20px;
@@ -194,20 +194,17 @@
       }
       100% {
         transform: translateY(-110vh) scale(1.4) rotate(360deg);
-        opacity: 0;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Nút điều khiển nhạc -->
+  <!-- Nút điều khiển âm thanh -->
   <button class="music-btn" id="musicBtn" onclick="toggleAudio(event)" title="Bật/Tắt nhạc">🎵</button>
 
-  <!-- Audio player (link nhạc piano không lời lãng mạn) -->
-  <audio id="bgMusic" loop preload="auto">
-    <source src="https://youtu.be/idfnoMuigSA?si=rQn4cl-MLphEKz1b" type="audio/mp3">
-  </audio>
+  <!-- Player YouTube ẩn chạy nền -->
+  <div id="yt-player"></div>
 
   <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleLetter()">
     <div class="envelope">
@@ -215,7 +212,6 @@
       <div class="envelope-front"></div>
       
       <div class="letter">
-        <div class="letter-title">Gửi em!</div>
         <p class="letter-text">
           Xin chào em bé của chồng. Ghé má lại đây để chồng dành tặng em thật nhiều nụ hôn vào má, vào môi xinh nhé 💋💋💋. Nếu ngày hôm nay em bé cũng yêu chồng nhiều thì hãy dành tặng chồng thật nhiều nụ hôn nhé!
         </p>
@@ -224,21 +220,61 @@
     </div>
   </div>
 
-  <div class="hint-text" id="hint"> chạm vào phong thư để mở </div>
+  <div class="hint-text" id="hint">chạm vào phong thư để mở</div>
 
+  <!-- Nạp thư viện YouTube API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script>
+    // ID video Beautiful In White bạn gửi
+    const YOUTUBE_VIDEO_ID = 'idfnoMuigSA';
+
+    let player;
+    let isPlaying = false;
     let isOpen = false;
-    const audio = document.getElementById('bgMusic');
-    const musicBtn = document.getElementById('musicBtn');
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('yt-player', {
+        height: '1',
+        width: '1',
+        videoId: YOUTUBE_VIDEO_ID,
+        playerVars: {
+          'autoplay': 0,
+          'controls': 0,
+          'loop': 1,
+          'playlist': YOUTUBE_VIDEO_ID,
+          'playsinline': 1
+        },
+        events: {
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerStateChange(event) {
+      const musicBtn = document.getElementById('musicBtn');
+      if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        musicBtn.textContent = '🎵';
+      } else if (event.data === YT.PlayerState.PAUSED) {
+        isPlaying = false;
+        musicBtn.textContent = '🔇';
+      }
+    }
+
+    function playMusic() {
+      if (player && typeof player.playVideo === 'function') {
+        player.playVideo();
+      }
+    }
 
     function toggleAudio(e) {
       if (e) e.stopPropagation();
-      if (audio.paused) {
-        audio.play();
-        musicBtn.textContent = '🎵';
+      if (!player || typeof player.playVideo !== 'function') return;
+      
+      if (isPlaying) {
+        player.pauseVideo();
       } else {
-        audio.pause();
-        musicBtn.textContent = '🔇';
+        player.playVideo();
       }
     }
 
@@ -250,12 +286,8 @@
       wrapper.classList.toggle('open', isOpen);
       hint.textContent = isOpen ? "chạm lần nữa để khép lại" : "chạm vào phong thư để mở";
       
-      // Tự động phát nhạc khi chạm mở phong thư lần đầu tiên
-      if (isOpen && audio.paused) {
-        audio.play().catch(() => {});
-      }
-
       if (isOpen) {
+        playMusic();
         for (let i = 0; i < 15; i++) {
           setTimeout(createHeart, i * 150);
         }
@@ -265,7 +297,7 @@
     function createHeart() {
       const heart = document.createElement('div');
       heart.classList.add('heart-particle');
-      heart.innerHTML = ['💖', '🌸', '✨', '💕', '❤️'][Math.floor(Math.random() * 5)];
+      heart.innerHTML = ['💖', '🌸', '✨', '💕', '❤️', '💋'][Math.floor(Math.random() * 6)];
       heart.style.left = Math.random() * 100 + 'vw';
       heart.style.fontSize = (Math.random() * 16 + 16) + 'px';
       heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
