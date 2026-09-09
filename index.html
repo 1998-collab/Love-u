@@ -23,7 +23,30 @@
       justify-content: center;
       font-family: 'Quicksand', sans-serif;
       overflow-x: hidden;
-      padding: 20px 10px;
+      padding: 20px;
+    }
+
+    /* Nút bật/tắt nhạc góc phải */
+    .music-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #ff758c;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      z-index: 100;
+      transition: transform 0.2s ease;
+    }
+    .music-btn:active {
+      transform: scale(0.9);
     }
 
     /* Container phong bì */
@@ -31,13 +54,12 @@
       position: relative;
       cursor: pointer;
       perspective: 1000px;
-      margin-top: 180px;
-      transition: margin-top 0.5s ease;
+      margin-top: 50px;
     }
 
     .envelope {
       position: relative;
-      width: 330px;
+      width: 320px;
       height: 200px;
       background: #ff758c;
       border-radius: 0 0 10px 10px;
@@ -51,21 +73,21 @@
       position: absolute;
       top: 0;
       left: 0;
-      border-left: 165px solid transparent;
-      border-right: 165px solid transparent;
+      border-left: 160px solid transparent;
+      border-right: 160px solid transparent;
       border-top: 110px solid #ff5e7e;
       transform-origin: top;
       transition: transform 0.6s 0.2s ease, z-index 0.2s 0.4s ease;
       z-index: 5;
     }
 
-    /* Mặt trước phong thư */
+    /* Mặt trước của phong thư */
     .envelope-front {
       position: absolute;
       bottom: 0;
       left: 0;
-      border-left: 165px solid #ff7b93;
-      border-right: 165px solid #ff7b93;
+      border-left: 160px solid #ff7b93;
+      border-right: 160px solid #ff7b93;
       border-bottom: 100px solid #ff6884;
       border-top: 100px solid transparent;
       border-radius: 0 0 10px 10px;
@@ -88,12 +110,12 @@
     /* Lá thư bên trong */
     .letter {
       position: absolute;
-      left: 12px;
+      left: 15px;
       bottom: 10px;
-      width: 306px;
+      width: 290px;
       background: #ffffff;
-      border-radius: 12px;
-      padding: 20px 16px 15px;
+      border-radius: 8px;
+      padding: 24px 20px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       transition: all 0.7s ease;
       z-index: 2;
@@ -104,13 +126,13 @@
 
     .letter-text {
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.7;
       color: #4a4a4a;
       text-align: center;
     }
 
     .letter-sign {
-      margin-top: 12px;
+      margin-top: 16px;
       text-align: center;
       font-family: 'Dancing Script', cursive;
       font-size: 26px;
@@ -118,28 +140,7 @@
       color: #e63946;
     }
 
-    /* Khung video YouTube lồng bên trong thư */
-    .music-box {
-      margin-top: 12px;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 100%;
-      height: 80px;
-      background: #000;
-    }
-
-    .music-box iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    /* Trạng thái mở */
-    .envelope-wrapper.open {
-      margin-top: 240px;
-    }
-
+    /* Hiệu ứng khi bấm mở */
     .envelope-wrapper.open .envelope::before {
       transform: rotateX(180deg);
       z-index: 1;
@@ -150,15 +151,15 @@
     }
 
     .envelope-wrapper.open .letter {
-      bottom: 140px;
+      bottom: 210px;
       opacity: 1;
-      max-height: 600px;
+      max-height: 500px;
       z-index: 6;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.18);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     }
 
     .hint-text {
-      margin-top: 40px;
+      margin-top: 35px;
       color: #d63384;
       font-weight: 600;
       font-size: 15px;
@@ -171,7 +172,7 @@
       50% { opacity: 1; transform: scale(1.05); }
     }
 
-    /* Hiệu ứng bay */
+    /* Trái tim bay */
     .heart-particle {
       position: fixed;
       bottom: -20px;
@@ -192,6 +193,14 @@
 </head>
 <body>
 
+  <!-- Nút điều khiển âm thanh -->
+  <button class="music-btn" id="musicBtn" onclick="toggleAudio(event)" title="Bật/Tắt nhạc">🎵</button>
+
+  <!-- Audio player phát file music.mp3 đã tải lên GitHub -->
+  <audio id="bgMusic" loop playsinline preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
   <div class="envelope-wrapper" id="envelopeWrapper" onclick="toggleLetter()">
     <div class="envelope">
       <div class="seal-heart">💌</div>
@@ -199,18 +208,9 @@
       
       <div class="letter">
         <p class="letter-text">
-          Xin chào em bé của chồng. Ghé má lại đây để chồng dành tặng em thật nhiều nụ hôn vào má, vào môi xinh nhé 💋💋💋. Nếu ngày hôm nay em bé cũng yêu chồng nhiều thì hãy dành tặng chồng thật nhiều nụ hôn nhé!
+          Xin chào em bé của chồng. Ghé má lại đây để chồng dành tặng em thật nhiều nụ hôn vào má, vào môi xinh nhé 💋💋💋. Nếu ngày hôm nay em bé cũng yêu chồng nhiều thì hãy dành tặng chồng thật nhiều nụ hôn nha!
         </p>
         <div class="letter-sign">Chồng yêu em ❤️</div>
-        
-        <!-- Trình phát YouTube hiển thị gọn gàng, bấm là chạy ngay không lo bị chặn -->
-        <div class="music-box" onclick="event.stopPropagation()">
-          <iframe 
-            src="https://www.youtube.com/embed/idfnoMuigSA?enablejsapi=1&playsinline=1" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-          </iframe>
-        </div>
       </div>
     </div>
   </div>
@@ -219,6 +219,28 @@
 
   <script>
     let isOpen = false;
+    const audio = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicBtn');
+
+    function playAudioSafe() {
+      if (audio.paused) {
+        audio.play().then(() => {
+          musicBtn.textContent = '🎵';
+        }).catch(err => {
+          console.log("Chờ người dùng chạm màn hình:", err);
+        });
+      }
+    }
+
+    function toggleAudio(e) {
+      if (e) e.stopPropagation();
+      if (audio.paused) {
+        playAudioSafe();
+      } else {
+        audio.pause();
+        musicBtn.textContent = '🔇';
+      }
+    }
 
     function toggleLetter() {
       const wrapper = document.getElementById('envelopeWrapper');
@@ -228,7 +250,9 @@
       wrapper.classList.toggle('open', isOpen);
       hint.textContent = isOpen ? "chạm lần nữa để khép lại" : "chạm vào phong thư để mở";
       
+      // Chạm mở phong thư là nhạc cất lên ngay lập tức
       if (isOpen) {
+        playAudioSafe();
         for (let i = 0; i < 15; i++) {
           setTimeout(createHeart, i * 150);
         }
